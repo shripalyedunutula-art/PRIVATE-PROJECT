@@ -3,416 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Adaptive Path Planning | Autonomous Vehicle</title>
-
-    <link rel="stylesheet" href="style.css">
+    <title>VR Pothole Detection Simulation</title>
+    <!-- A-Frame Library for VR/AR Rendering -->
+    <script src="https://aframe.io"></script>
 </head>
-
 <body>
 
-<header class="topbar">
-
-    <div class="brand">
-        <div class="brand-icon">AV</div>
-
-        <div>
-            <h1>ADAPTIVE DRIVE</h1>
-            <span>Autonomous Vehicle Research Demo</span>
-        </div>
-    </div>
-
-    <div class="system-status">
-        <span class="status-dot"></span>
-        SYSTEM ONLINE
-    </div>
-
-</header>
-
-
-<main class="layout">
-
-    <!-- LEFT CONTROL PANEL -->
-
-    <aside class="panel control-panel">
-
-        <div class="panel-title">
-            <span>CONTROL SYSTEM</span>
-            <small>01</small>
-        </div>
-
-        <button id="startBtn" class="primary-btn">
-            ▶ START SIMULATION
-        </button>
-
-        <button id="pauseBtn" class="secondary-btn">
-            ❚❚ PAUSE
-        </button>
-
-        <button id="resetBtn" class="secondary-btn">
-            ↻ RESET
-        </button>
-
-
-        <div class="control-section">
-
-            <label>
-                OBSTACLE DENSITY
-                <strong id="densityValue">50%</strong>
-            </label>
-
-            <input
-                id="density"
-                type="range"
-                min="10"
-                max="90"
-                value="50"
-            >
-
-        </div>
-
-
-        <div class="control-section">
-
-            <label>
-                SENSOR RANGE
-                <strong id="rangeValue">160 m</strong>
-            </label>
-
-            <input
-                id="range"
-                type="range"
-                min="80"
-                max="220"
-                value="160"
-            >
-
-        </div>
-
-
-        <div class="sensor-list">
-
-            <div class="sensor-item">
-                <span class="sensor-light active"></span>
-                LiDAR
-                <strong>ACTIVE</strong>
-            </div>
-
-            <div class="sensor-item">
-                <span class="sensor-light active"></span>
-                RADAR
-                <strong>ACTIVE</strong>
-            </div>
-
-            <div class="sensor-item">
-                <span class="sensor-light active"></span>
-                CAMERA
-                <strong>ACTIVE</strong>
-            </div>
-
-            <div class="sensor-item">
-                <span class="sensor-light active"></span>
-                ULTRASONIC
-                <strong>ACTIVE</strong>
-            </div>
-
-        </div>
-
-    </aside>
-
-
-    <!-- SIMULATION -->
-
-    <section class="simulation">
-
-        <div class="simulation-header">
-
-            <div>
-                <span class="eyebrow">LIVE SIMULATION</span>
-
-                <h2>
-                    Adaptive Path Planning
-                </h2>
-            </div>
-
-            <div class="road-type">
-                UNSTRUCTURED ROAD
-            </div>
-
-        </div>
-
-
-        <div id="road" class="road">
-
-            <!-- ROAD GRID -->
-
-            <div class="road-grid"></div>
-
-            <!-- ROAD EDGES -->
-
-            <div class="road-edge left-edge"></div>
-            <div class="road-edge right-edge"></div>
-
-
-            <!-- SENSOR RINGS -->
-
-            <div id="sensorRing1" class="sensor-ring ring-one"></div>
-            <div id="sensorRing2" class="sensor-ring ring-two"></div>
-            <div id="sensorRing3" class="sensor-ring ring-three"></div>
-
-
-            <!-- DETECTION BEAMS -->
-
-            <div class="scan-beam beam-left"></div>
-            <div class="scan-beam beam-right"></div>
-            <div class="scan-beam beam-center"></div>
-
-
-            <!-- ADAPTIVE PATH -->
-
-            <div id="safePath" class="safe-path">
-
-                <div class="path-line"></div>
-
-            </div>
-
-
-            <!-- OBSTACLES -->
-
-            <div class="obstacle obstacle-1">
-                <span>⚠</span>
-            </div>
-
-            <div class="obstacle obstacle-2">
-                <span>⬟</span>
-            </div>
-
-            <div class="pothole pothole-1"></div>
-            <div class="pothole pothole-2"></div>
-
-
-            <!-- CAR -->
-
-            <div id="car" class="car">
-
-                <div class="car-sensor sensor-front"></div>
-
-                <div class="car-body">
-
-                    <div class="windshield"></div>
-
-                    <div class="car-roof"></div>
-
-                    <div class="headlight left"></div>
-                    <div class="headlight right"></div>
-
-                    <div class="wheel wheel-left"></div>
-                    <div class="wheel wheel-right"></div>
-
-                </div>
-
-                <div class="car-label">
-                    AV-01
-                </div>
-
-            </div>
-
-
-            <!-- SENSOR LABEL -->
-
-            <div class="sensor-label">
-                <span class="pulse"></span>
-                SENSOR SCANNING
-            </div>
-
-
-            <!-- DETECTION BOX -->
-
-            <div id="detectionBox" class="detection-box">
-
-                <span class="detection-icon">!</span>
-
-                <div>
-                    <strong>OBSTACLE DETECTED</strong>
-                    <small id="detectionText">
-                        Calculating safe trajectory...
-                    </small>
-                </div>
-
-            </div>
-
-
-            <!-- ROAD INFORMATION -->
-
-            <div class="road-info">
-
-                <div>
-                    <span>ROAD SURFACE</span>
-                    <strong id="surfaceStatus">
-                        IRREGULAR
-                    </strong>
-                </div>
-
-                <div>
-                    <span>PATH STATUS</span>
-                    <strong id="pathStatus">
-                        ANALYZING
-                    </strong>
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- RIGHT DATA PANEL -->
-
-    <aside class="panel telemetry-panel">
-
-        <div class="panel-title">
-            <span>VEHICLE TELEMETRY</span>
-            <small>02</small>
-        </div>
-
-
-        <div class="telemetry-grid">
-
-            <div class="telemetry-card">
-
-                <span>SPEED</span>
-
-                <strong>
-                    <span id="speed">32</span>
-                    <small>km/h</small>
-                </strong>
-
-            </div>
-
-
-            <div class="telemetry-card">
-
-                <span>STEERING</span>
-
-                <strong>
-                    <span id="steering">0</span>
-                    <small>°</small>
-                </strong>
-
-            </div>
-
-
-            <div class="telemetry-card">
-
-                <span>OBSTACLES</span>
-
-                <strong id="obstacleCount">
-                    02
-                </strong>
-
-            </div>
-
-
-            <div class="telemetry-card">
-
-                <span>SAFE DISTANCE</span>
-
-                <strong>
-                    <span id="distance">48</span>
-                    <small>m</small>
-                </strong>
-
-            </div>
-
-        </div>
-
-
-        <div class="algorithm-box">
-
-            <span>ACTIVE ALGORITHM</span>
-
-            <h3>
-                ADAPTIVE A*
-            </h3>
-
-            <p>
-                Dynamic path generation based on
-                real-time sensor data and obstacle
-                avoidance.
-            </p>
-
-        </div>
-
-
-        <div class="process">
-
-            <div class="process-title">
-                DECISION PIPELINE
-            </div>
-
-            <div class="process-step active">
-                <span>01</span>
-                SENSOR INPUT
-            </div>
-
-            <div class="process-step active">
-                <span>02</span>
-                ENVIRONMENT MAPPING
-            </div>
-
-            <div id="step3" class="process-step">
-                <span>03</span>
-                OBSTACLE DETECTION
-            </div>
-
-            <div id="step4" class="process-step">
-                <span>04</span>
-                PATH PLANNING
-            </div>
-
-            <div id="step5" class="process-step">
-                <span>05</span>
-                STEERING COMMAND
-            </div>
-
-        </div>
-
-
-        <div class="confidence">
-
-            <div>
-                <span>AI CONFIDENCE</span>
-                <strong id="confidenceValue">94%</strong>
-            </div>
-
-            <div class="confidence-bar">
-                <div id="confidenceFill"></div>
-            </div>
-
-        </div>
-
-    </aside>
-
-</main>
-
-
-<footer>
-
-    <span>PSG COLLEGE OF TECHNOLOGY</span>
-
-    <span>
-        AUTONOMOUS VEHICLE SYSTEMS
-    </span>
-
-    <span>
-        ADAPTIVE PATH PLANNING • COLLISION AVOIDANCE
-    </span>
-
-</footer>
-
-
-<script src="script.js"></script>
-
+    <!-- The VR Scene Context -->
+    <a-scene xr-mode-ui="enabled: true">
+        
+        <!-- Sky / Environment Atmosphere -->
+        <a-sky color="#87CEEB"></a-sky>
+        <a-ambient-light color="#bbb"></a-ambient-light>
+        <a-directional-light color="#fff" intensity="0.6" position="-1 2 4"></a-directional-light>
+
+        <!-- Infinite Looking Endless Road Grid -->
+        <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="2000" color="#333333"></a-plane>
+        <!-- Center Road Lines -->
+        <a-plane position="0 0.01 0" rotation="-90 0 0" width="0.2" height="2000" color="#FFFF00" material="repeat: 1 100; shader: flat"></a-plane>
+
+        <!-- THE POTHOLE: Placed 100 meters away along the Z-axis (-100) -->
+        <a-cylinder id="pothole" position="0 0.02 -100" radius="1.5" height="0.05" color="#111111"></a-cylinder>
+
+        <!-- THE VIRTUAL CAR & CAMERA (The player sits inside this rig) -->
+        
+            
+            <!-- 3D Conceptual Car Body (Simple shapes representing the vehicle) -->
+            <a-box position="0 0.6 0" width="2" height="0.8" depth="4" color="#ff0000"></a-box>
+            <a-box position="0 1.2 -0.5" width="1.8" height="0.6" depth="2" color="#111111" material="opacity: 0.8; transparent: true"></a-box>
+            
+            <!-- VR Camera Hooked Inside the Car -->
+            
+                
+                <!-- HUD / Virtual Action Reality Alert UI -->
+                
+                
+                
+            
+        
+
+    </a-scene>
+
+    <!-- Simulation & Detection Logic -->
+    <script>
+        const car = document.getElementById('car-rig');
+        const pothole = document.getElementById('pothole');
+        const hud = document.getElementById('hud');
+
+        const speed = 0.3; // Speed of the moving car
+        const detectionThreshold = 100; // Distance in meters to trigger detection
+
+        function updateSimulation() {
+            // 1. Move the car forward along the negative Z-axis
+            let currentPos = car.getAttribute('position');
+            currentPos.z -= speed;
+            car.setAttribute('position', currentPos);
+
+            // 2. Fetch the target pothole's position
+            let potholePos = pothole.getAttribute('position');
+
+            // 3. Calculate the distance between the car and the pothole
+            let distance = Math.abs(currentPos.z - potholePos.z);
+
+            // 4. Action Reality Detection Logic
+            if (currentPos.z <= potholePos.z) {
+                // Car has passed or hit the pothole
+                hud.setAttribute('material', 'color', '#333333');
+                hud.setAttribute('text', 'value: Pothole Passed; color: #FFFFFF');
+            } else if (distance <= detectionThreshold) {
+                // Pothole detected within 100 meters!
+                hud.setAttribute('material', 'color', '#CC0000'); // Turn HUD Red
+                hud.setAttribute('text', `value: WARNING: POTHOLE\n${Math.round(distance)}m Ahead!; color: #FFFFFF`);
+            } else {
+                // Scanning phase
+                hud.setAttribute('material', 'color', '#000000');
+                hud.setAttribute('text', `value: Scanning Road...\nPothole: ${Math.round(distance)}m away; color: #00FF00`);
+            }
+
+            // Loop the animation framework frame by frame
+            requestAnimationFrame(updateSimulation);
+        }
+
+        // Start the simulation when the page loads
+        window.onload = updateSimulation;
+    </script>
 </body>
 </html>
+
